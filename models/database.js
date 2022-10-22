@@ -39,4 +39,24 @@ const actSchema=new mongoose.Schema(
 
 const actmodel=mongoose.model('actmodel',actSchema)
 
-module.exports={faqmodel,actmodel}
+const registerSchema=new mongoose.Schema(
+    {
+       name:
+       {
+       
+        required:true,
+        type:String
+       },
+       password:
+       {
+        required:true,
+        type:String
+       }
+    }
+)
+
+const auth=mongoose.model('auth',registerSchema)
+
+
+
+module.exports={faqmodel,actmodel,  auth}

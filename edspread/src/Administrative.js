@@ -5,7 +5,8 @@ import {
     FormControlLabel,
     TextareaAutosize,
     Button,
-    Divider
+    Divider,
+    IconButton
 
 
 
@@ -15,9 +16,10 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { Stack } from "@mui/system";
 import axios from 'axios'
-
+axios.defaults.withCredentials = true
 function Administrative() {
     const [value, setValue] = React.useState('')
     const [qna, setqna] = React.useState({
@@ -28,29 +30,45 @@ function Administrative() {
     const [status2, setStatus2] = React.useState(false)
     const [data, setData] = React.useState([])
     const [data2, setData2] = React.useState([])
+    const [renderStat, setRenderStat] = React.useState(false)
 
-    React.useEffect(() => {
-        axios.get('http://localhost:5000/activity')
-            .then((result) => {
-                result = result.data
-                setData(result)
+    function gettingFromDb() {
 
-
-            }).catch((err) => {
-
-            });
-    }, [])
-    React.useEffect(() => {
         axios.get('http://localhost:5000/')
             .then((result) => {
                 result = result.data
-                setData2(result)
+                if(result.status)
+               { setData2(result.rows)
+                   setRenderStat(true)
+            }
+                else
+                {console.log(result.reason);
+                    document.write(result.reason)}
 
 
             }).catch((err) => {
 
             });
-    }, [])
+    }
+    function gettingFromDbAct() {
+        axios.get('http://localhost:5000/activity')
+            .then((result) => {
+                result = result.data
+
+                if(result.status)
+                setData(result.rows)
+                else
+                {document.write(result.reason)
+              
+                }
+
+            }).catch((err) => {
+
+            });
+    }
+    
+    React.useEffect(gettingFromDb, [])
+    React.useEffect(gettingFromDbAct, [])
     // console.log(status)
     // console.log(qna)
     console.log(value);
@@ -109,20 +127,26 @@ function Administrative() {
         }
     }
     async function postCall(obj) {
-        obj.preventDefault()
+
         axios.post('http://localhost:5000/', { ...qna }
 
         )
             .then((result) => {
+                console.log(result.data);
                 if (result.data) {
                     console.log(result)
-                    setStatus(true)
-                    setqna({
-                        first: '',
-                        second: ''
-                    })
+                    
+                   
+                        setStatus(true)
+                        setqna({
+                            first: '',
+                            second: ''
+                        })
+                        gettingFromDb()
+                    
                 }
                 else {
+                    document.write('login first to avail the feature')
                     console.log('failed!')
                     setqna({
                         first: '',
@@ -143,16 +167,25 @@ function Administrative() {
         setStatus(false)
         setStatus2(false)
 
+
     }
+
+    function faqRefresh() {
+        console.log('im triggered')
+        gettingFromDb()
+    }
+
+
     function postCallsec2(obj) {
         console.log('im in post call sec2');
-        const payload = { value }
+        const payload = { value: value.toUpperCase(), withCredentials: true }
         axios.post('http://localhost:5000/activity', payload)
             .then((result) => {
                 if (result.data) {
                     console.log(result)
                     setStatus2(true)
                     setValue('')
+                    gettingFromDbAct()
                 }
                 else {
                     console.log('failure')
@@ -167,7 +200,8 @@ function Administrative() {
     }
 
     return (
-        <>
+        
+        renderStat?<>
             <Box display='flex' justifyContent='center'
                 sx={{
                     backgroundColor: 'brown',
@@ -195,21 +229,21 @@ function Administrative() {
                                     <Typography variant="body1"
                                         sx={{
                                             fontFamily: 'Gemunu Libre, sans-serif'
-                                        }} component='div'>PREV POSTED FAQ</Typography>
-                                <Stack>
-                                    {
-                                        data2.map((item)=>(
-                                            <Box>
-                                            <Typography color='green'
-                                            
-                                             >Q- {item.que.toUpperCase()}</Typography>
-                                            <Typography>{item.ans}</Typography>
-                                            <Divider color="red"/>
-                                            
-                                            </Box>
-                                        ))
-                                    }
-                                </Stack>
+                                        }} component='div'>PREV POSTED FAQ <IconButton onClick={faqRefresh}><RefreshIcon /></IconButton></Typography>
+                                    <Stack>
+                                        {
+                                            data2.map((item) => (
+                                                <Box>
+                                                    <Typography color='green'
+
+                                                    >Q- {item.que.toUpperCase()}</Typography>
+                                                    <Typography>{item.ans}</Typography>
+                                                    <Divider color="red" />
+
+                                                </Box>
+                                            ))
+                                        }
+                                    </Stack>
                                 </Box>
                                 <Box>
                                     <Typography variant='h6'
@@ -220,7 +254,7 @@ function Administrative() {
                                         component='div' display='block'>Enter the Data here</Typography>
                                 </Box>
                                 <br></br>
-                                <form method='post'>
+                                <form method='post' sx={{ display: 'flex', justifyContent: 'center' }}>
                                     <Stack spacing={2}>
 
 
@@ -262,7 +296,7 @@ function Administrative() {
 
                 </Accordion>
             </Box>
-            {/* club activites accordion */}
+            
             <Box>
                 <Accordion>
                     <AccordionSummary
@@ -334,7 +368,7 @@ function Administrative() {
                 </Accordion>
 
             </Box>
-        </>
+        </>:null
     )
 }
 
