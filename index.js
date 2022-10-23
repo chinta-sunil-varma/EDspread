@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 var session = require('express-session')
 const { faqmodel, actmodel, auth } = require('./models/database');
+const { v4: uuidv4 } = require('uuid');
 
 
 
@@ -17,7 +18,7 @@ authMiddleware=function (req,res,next)
         next()
     }else
     {
-
+        res.send({status:false,reason:'login first'})
     }
 }
 app.use(bodyParser.json())
@@ -55,60 +56,71 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.post('/', async (req, res) => {
-    if(req.session.activeStat)
-    {const { first, second } = req.body
-    const row = new faqmodel({ que: first, ans: second })
+app.get('/status',(req,res)=>
+{
+        if(req.session.admin)
+        {
+            return res.send({status:true,message:'is logged in',user:'admin'})
+        }
+        if(req.session.activeStat)
+        {
+           return res.send({status:true,message:'active user in the session',user:'normal'})
+        }
+        else{
+            res.send({status:false,message:'user not logged in!'})
+        }
+})
+
+// app.get('/status/admin',(req,res)=>
+// {
+//         if(req.session.admin)
+//         {
+//             res.send({status:true,message:'admin user in the session'})
+//         }
+//         else{
+//             res.send({status:false,message:'user not logged in!'})
+//         }
+// })
+app.post('/', authMiddleware ,async (req, res) => {
+   
+    const { first, second } = req.body
+    const row = new faqmodel({ que: first, ans: second,key:uuidv4() })
 
     const val = await row.save()
 
-    res.send('success')}
-    else
-    {
-        res.send({status:false,reason:'login first'})
-    }
+    res.send('success')
+   
 
 })
 
-app.post('/activity', async (req, res) => {
-    if(req.session.activeStat)
-    {const { value } = req.body
-    const row = new actmodel({ act: value })
+app.post('/activity',authMiddleware , async (req, res) => {
+  const { value } = req.body
+    const row = new actmodel({ act: value,key:uuidv4() })
     try {
         const val = await row.save()
         res.send({status:true})
     } catch
     {
         console.log({status:false,reason:'unable to insert to db'});
-    }}
-    else
-    {
-        res.send({status:false,reason:'login first to avail the feature'})
     }
+    
 
 })
-app.get('/activity', async (req, res) => {
+app.get('/activity',authMiddleware , async (req, res) => {
     console.log(req.session);
-    if (req.session.activeStat) {
+
         const rows = await actmodel.find()
         console.log(rows)
         res.send({status:true,rows})
-    }
-    else
-    {
-        res.send([{reason:'LOGIN FIRST TO SEE THE CONTENT',status:false}])
-    }
+    
+   
 })
 
-app.get('/', async (req, res) => {
-    if(req.session.activeStat)
-    {const rows = await faqmodel.find()
+app.get('/',authMiddleware , async (req, res) => {
+   const rows = await faqmodel.find()
     console.log(rows);
-    res.send({status:true,rows})}
-    else
-    {
-        res.send({status:false,reason:'login first to avail the feature'})
-    }
+    res.send({status:true,rows})
+   
 })
 
 app.get('/login', (req, res) => {
@@ -171,6 +183,8 @@ app.post('/login', async (req, res) => {
         bcrypt.compare(password, response.password, function (err, result) {
             // result == true
             if (result) {
+                if(name==='qwerty')
+                {req.session.admin=true}
                 req.session.activeStat = true
                 res.send({ status: true, message: 'logged in succesfuly' })
             }
@@ -189,6 +203,66 @@ app.post('/login', async (req, res) => {
     }
 
 
+})
+
+app.post('/del/faq',authMiddleware,async(req,res)=>{
+       const {key}=req.body
+       console.log(key);
+       try
+      {
+         const response= await faqmodel.findOneAndDelete({key:key})
+
+         if(response)
+         {
+            res.send({status:true,message:'succesfuly deleted'})
+         }
+    
+    
+    }
+    catch
+    {
+        res.send({status:false,message:'there is a problem in server'})
+    }
+       
+
+})
+
+app.post('/del/act',authMiddleware,async(req,res)=>{
+    const {key}=req.body
+    console.log(key);
+    try
+   {
+      const response= await actmodel.findOneAndDelete({key:key})
+
+      if(response)
+      {
+        console.log('hehe deleted activity');
+         res.send({status:true,message:'succesfuly deleted'})
+      }
+ 
+ 
+ }
+ catch
+ {
+     res.send({status:false,message:'there is a problem in server'})
+ }
+    
+
+})
+
+app.post('/logout',(req,res)=>
+{ if(req.session.admin)
+    {
+        req.session.admin=false
+        req.session.activeStat=false
+        return res.send({status:true,message:'logged out!'})
+    }
+    else
+    {
+        req.session.activeStat=false
+       return res.send({status:true,message:'logged out!'})
+    }
+    
 })
 
 const PORT = 5000 || process.env.PORT

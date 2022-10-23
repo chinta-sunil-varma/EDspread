@@ -4,24 +4,32 @@ import {Box,Typography, Paper,Stack} from '@mui/material'
 import RenderComp  from './faq-component'
 import axios from 'axios'
 
-
+axios.defaults.withCredentials=true
 
 function Faq()
 
 {
     const[data,setData]=React.useState([])
+   React.useEffect(()=>{
+                  
+    axios.get('http://localhost:5000/')
+    .then((result) => {
+        result = result.data
+        if(result.status)
+       { setData(result.rows)
+         
+    }
+        else
+        {console.log(result.reason);
+            document.write(result.reason)}
 
-    React.useEffect(() => {
-        axios.get('http://localhost:5000/')
-            .then((result) => {
-                result = result.data
-                setData(result)
 
+    }).catch((err) => {
 
-            }).catch((err) => {
+    });
 
-            });
-    }, [])
+   },[])
+    
     return(
         <>
         <Box display='flex' justifyContent='center'
@@ -37,8 +45,8 @@ function Faq()
 
         >SOME COMMONLY ASKED FAQ'S</Typography>
     </Box>
-    <Box>
-        <Stack>
+    <Box sx={{display:'flex',justifyContent:'center'}}>
+        <Stack sx={{width:'50%'}}>
              <Paper>
                {data.map((item)=>
                (

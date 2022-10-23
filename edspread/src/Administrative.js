@@ -19,8 +19,36 @@ import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Stack } from "@mui/system";
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 axios.defaults.withCredentials = true
+
+
+
+
 function Administrative() {
+   
+    const [apiConf, setapiConf] = React.useState(false)
+    
+    const navigate = useNavigate()
+    React.useEffect(() => {
+        axios.get('http://localhost:5000/status')
+            .then((result) => {
+                if (result.data.status)
+                 {
+                    if(result.data.user==='admin')
+                    setapiConf(true)
+                    else
+                    navigate('/login')
+                    
+                    }
+                else
+                    {navigate('/login')
+                return}
+            }).catch((err) => {
+
+            });
+    }, [])
+
     const [value, setValue] = React.useState('')
     const [qna, setqna] = React.useState({
         first: '',
@@ -30,20 +58,21 @@ function Administrative() {
     const [status2, setStatus2] = React.useState(false)
     const [data, setData] = React.useState([])
     const [data2, setData2] = React.useState([])
-    const [renderStat, setRenderStat] = React.useState(false)
-
+    
+     console.log(data2)
     function gettingFromDb() {
 
         axios.get('http://localhost:5000/')
             .then((result) => {
                 result = result.data
-                if(result.status)
-               { setData2(result.rows)
-                   setRenderStat(true)
-            }
-                else
-                {console.log(result.reason);
-                    document.write(result.reason)}
+                if (result.status) {
+                    setData2(result.rows)
+
+                }
+                else {
+                    console.log(result.reason);
+                    navigate('/')
+                }
 
 
             }).catch((err) => {
@@ -55,50 +84,28 @@ function Administrative() {
             .then((result) => {
                 result = result.data
 
-                if(result.status)
-                setData(result.rows)
-                else
-                {document.write(result.reason)
-              
+                if (result.status)
+                    setData(result.rows)
+                else {
+                    navigate('/')
+
                 }
 
             }).catch((err) => {
 
             });
     }
-    
-    React.useEffect(gettingFromDb, [])
-    React.useEffect(gettingFromDbAct, [])
-    // console.log(status)
-    // console.log(qna)
+   React.useEffect(()=>{
+    if(apiConf)
+    gettingFromDb()}, [apiConf]) 
+
+      React.useEffect(()=>{
+        if(apiConf)
+        gettingFromDbAct()}, [apiConf]) 
+
     console.log(value);
 
-    // function increase() {
-    //     setValue((prev) => {
-    //         const arr = [...prev.content]
-    //         const name = 'act' + prev.len
-    //         arr.push(
-    //             <FormControlLabel control={<TextareaAutosize
-    //                 style={{
-    //                     width: '400px',
-    //                     marginBottom: '4px'
-    //                 }}
-    //                 placeholder="your new Activity goes here" name={name} />}
 
-    //             />)
-
-    //         console.log('inisde set value', prev);
-    //         return (
-
-    //             {
-    //                 content: arr,
-    //                 len: prev.len + 1
-
-
-    //             }
-    //         )
-    //     })
-    // }
 
     function updateqna(obj) {
         const { name, value } = obj.target
@@ -135,15 +142,15 @@ function Administrative() {
                 console.log(result.data);
                 if (result.data) {
                     console.log(result)
-                    
-                   
-                        setStatus(true)
-                        setqna({
-                            first: '',
-                            second: ''
-                        })
-                        gettingFromDb()
-                    
+
+
+                    setStatus(true)
+                    setqna({
+                        first: '',
+                        second: ''
+                    })
+                    gettingFromDb()
+
                 }
                 else {
                     document.write('login first to avail the feature')
@@ -199,10 +206,56 @@ function Administrative() {
 
     }
 
+    function  delfaq(obj)
+    {
+        const {id}=obj.target
+        console.log(id);
+        axios.post('http://localhost:5000/del/faq',{key:id})
+        .then((result) => {
+            result=result.data
+            if(result.status)
+            gettingFromDb()
+            
+        }).catch((err) => {
+            
+        });
+    }
+
+    function  delact(obj)
+    {
+        const {id}=obj.target
+        console.log(id);
+        axios.post('http://localhost:5000/del/act',{key:id})
+        .then((result) => {
+            result=result.data
+            if(result.status)
+            gettingFromDbAct()
+            
+        }).catch((err) => {
+            
+        });
+    }
+
+    function logout()
+    {
+        axios.post('http://localhost:5000/logout')
+        .then((result) => {
+            result=result.data
+            if(result.status)
+            {
+                console.log('logged out succesfully');
+                navigate('/login')
+            }
+        }).catch((err) => {
+            
+        });
+    }
+
     return (
-        
-        renderStat?<>
+
+        apiConf ? <>
             <Box display='flex' justifyContent='center'
+          color='whitesmoke'
                 sx={{
                     backgroundColor: 'brown',
                     marginBottom: '30px'
@@ -215,8 +268,15 @@ function Administrative() {
 
                 >ADMINISTRATIVE PANEL</Typography>
             </Box>
-            <Box marginBottom={2}>
-                <Accordion>
+            <Box marginBottom={2}
+            sx={{color:'whitesmoke',backgroundColor:'black'}}
+            >
+                <Accordion
+                sx={{
+                    backgroundColor:'black',
+                    color:'whitesmoke'
+                }}
+                >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                     >
@@ -232,15 +292,19 @@ function Administrative() {
                                         }} component='div'>PREV POSTED FAQ <IconButton onClick={faqRefresh}><RefreshIcon /></IconButton></Typography>
                                     <Stack>
                                         {
+                                           
                                             data2.map((item) => (
-                                                <Box>
+                                                <>
+                                               
+                                                <Box key={item.key}  >
                                                     <Typography color='green'
 
                                                     >Q- {item.que.toUpperCase()}</Typography>
                                                     <Typography>{item.ans}</Typography>
                                                     <Divider color="red" />
+                                                    <Button id={item.key} onClick={delfaq}>DELETE</Button>
 
-                                                </Box>
+                                                </Box></>
                                             ))
                                         }
                                     </Stack>
@@ -296,9 +360,14 @@ function Administrative() {
 
                 </Accordion>
             </Box>
-            
+
             <Box>
-                <Accordion>
+                <Accordion
+                 sx={{
+                    backgroundColor:'black',
+                    color:'whitesmoke'
+                }}
+                >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}>
                         <Icon  ><AddIcon /></Icon>    <Typography variant="body1" component='div'>  CLUB ACTIVITIES</Typography>
@@ -315,7 +384,9 @@ function Administrative() {
                                 </Box>
                                 {data.map((item) =>
                                 (
+                                    <>
                                     <Typography variant="h6" color='green' component='div'>{item.act.toUpperCase()}</Typography>
+                                    <Button sx={{display:'inline'}} onClick={delact} id={item.key}>DELETE</Button></>
                                 )
 
                                 )}
@@ -368,7 +439,11 @@ function Administrative() {
                 </Accordion>
 
             </Box>
-        </>:null
+            <Button color='secondary' variant='contained'
+            onClick={logout}
+            >LOGOUT</Button>
+        </> : null
+      
     )
 }
 

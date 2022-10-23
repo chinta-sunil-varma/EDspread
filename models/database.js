@@ -13,13 +13,19 @@ async function main() {
 const faqSchema= new mongoose.Schema(
     {
         que:
-        {
+        {   unique:true,
             required:true,
             type:String
         },
         ans:
         {
             required:true,
+            type:String
+        },
+        key:
+        {
+            required:true,
+            unique:true,
             type:String
         }
     }
@@ -31,6 +37,14 @@ const actSchema=new mongoose.Schema(
     {
         act:
         {
+            unique:true,
+            required:true,
+            type:String,
+
+        },
+        key:
+        {
+            unique:true,
             required:true,
             type:String
         }
@@ -43,7 +57,7 @@ const registerSchema=new mongoose.Schema(
     {
        name:
        {
-       
+        unique:true,
         required:true,
         type:String
        },
