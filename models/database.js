@@ -2,14 +2,15 @@
 
 const mongoose = require('mongoose');
 
-main().catch(err => console.log(err));
+// main().catch(err => console.log(err));
 
-async function main() {
-  await mongoose.connect('mongodb://localhost:27017/edspread');
-  console.log('connected to db')
+// var connect;
+//  function main() {
+//    connect =  mongoose.createConnection('mongodb://localhost:27017/edspread');
+//   console.log('connected to db')
   
-  // use `await mongoose.connect('mongodb://user:password@localhost:27017/test');` if your database has auth enabled
-}
+//   // use `await mongoose.connect('mongodb://user:password@localhost:27017/test');` if your database has auth enabled
+// }
 const faqSchema= new mongoose.Schema(
     {
         que:
@@ -31,7 +32,7 @@ const faqSchema= new mongoose.Schema(
     }
 )
 
-const faqmodel=mongoose.model('faqmodel',faqSchema)
+// const faqmodel=conn.model('faqmodel',faqSchema)
 
 const actSchema=new mongoose.Schema(
     {
@@ -51,7 +52,7 @@ const actSchema=new mongoose.Schema(
     }
 )
 
-const actmodel=mongoose.model('actmodel',actSchema)
+// const actmodel=conn.model('actmodel',actSchema)
 
 const registerSchema=new mongoose.Schema(
     {
@@ -69,8 +70,8 @@ const registerSchema=new mongoose.Schema(
     }
 )
 
-const auth=mongoose.model('auth',registerSchema)
+// const auth=conn.model('auth',registerSchema)
 
 
 
-module.exports={faqmodel,actmodel,  auth}
+module.exports={faqSchema,actSchema, registerSchema}

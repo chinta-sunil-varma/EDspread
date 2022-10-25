@@ -2,15 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 var session = require('express-session')
-const { faqmodel, actmodel, auth } = require('./models/database');
-const { v4: uuidv4 } = require('uuid');
+const Mongoose = require('mongoose').Mongoose
+const { Server } = require("socket.io");
+const ChatM = require('./models/chats')
+const chatRouter = require('./routes/chatRouter')
 
-
-
-const bcrypt = require('bcrypt');
-
-
+const http = require("http");
 const app = express()
+const server = http.createServer(app);
+
+
 authMiddleware=function (req,res,next)
 {
     if(req.session.activeStat)
@@ -55,6 +56,83 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
+const instance1 = new Mongoose()
+
+
+
+
+const { faqSchema,actSchema, registerSchema } = require('./models/database');
+
+
+
+instance1.connect('mongodb://localhost:27017/edspread');
+// conn1
+// .then((db)=>{
+//     console.log("Connected properly DBMAIN")
+//   } , (err)=>{
+//     console.log("Error :" +err)
+//   })
+
+  //console.log('connected to db')
+  
+  // use `await mongoose.connect('mongodb://user:password@localhost:27017/test');` if your database has auth enabled
+  const faqmodel=instance1.model('faqmodel',faqSchema)
+  const actmodel=instance1.model('actmodel',actSchema)
+  const auth=instance1.model('auth',registerSchema)
+
+const { v4: uuidv4 } = require('uuid');
+
+
+
+
+const bcrypt = require('bcrypt');
+
+
+
+
+
+
+
+
+// connect
+// .then((db)=>{
+//   console.log("Connected properly DBchat")
+// } , (err)=>{
+//   console.log("Error :" +err)
+// })
+
+const io = new Server(server, {
+    cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"],
+    },
+  });
+  
+  app.use('/fetch' , chatRouter)
+  io.on("connection", (socket) => {
+        console.log(`User Connected: ${socket.id}`);
+  
+        socket.on("join_room", (data) => {
+          socket.join(data);
+          console.log(`User with ID: ${socket.id} joined room: ${data}`);
+        });
+  
+        socket.on("send_message", (data) => {
+          socket.to(data.room).emit("receive_message", data);
+          ChatM.create({message:data.message , author:data.author , time:data.time , room:data.room})
+          //chatM.insertOne({message:data.message , author:data.author , time:data.time , room:data.room})
+          .then((msg)=>{
+            console.log('msg created succesfully' , msg)
+            }, (err)=>next(err))
+          .catch((err)=> console.log(err))
+            });
+  
+        socket.on("disconnect", () => {
+          console.log("User Disconnected", socket.id);
+        });
+  });
+
+
 
 app.get('/status',(req,res)=>
 {
@@ -266,6 +344,6 @@ app.post('/logout',(req,res)=>
 })
 
 const PORT = 5000 || process.env.PORT
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log('succesfuly listening in ', PORT);
 })
