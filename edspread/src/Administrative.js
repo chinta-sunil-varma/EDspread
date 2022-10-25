@@ -26,24 +26,24 @@ axios.defaults.withCredentials = true
 
 
 function Administrative() {
-   
+
     const [apiConf, setapiConf] = React.useState(false)
-    
+
     const navigate = useNavigate()
     React.useEffect(() => {
         axios.get('http://localhost:5000/status')
             .then((result) => {
-                if (result.data.status)
-                 {
-                    if(result.data.user==='admin')
-                    setapiConf(true)
+                if (result.data.status) {
+                    if (result.data.user === 'admin')
+                        setapiConf(true)
                     else
+                        navigate('/login')
+
+                }
+                else {
                     navigate('/login')
-                    
-                    }
-                else
-                    {navigate('/login')
-                return}
+                    return
+                }
             }).catch((err) => {
 
             });
@@ -58,8 +58,8 @@ function Administrative() {
     const [status2, setStatus2] = React.useState(false)
     const [data, setData] = React.useState([])
     const [data2, setData2] = React.useState([])
-    
-     console.log(data2)
+
+    console.log(data2)
     function gettingFromDb() {
 
         axios.get('http://localhost:5000/')
@@ -95,13 +95,15 @@ function Administrative() {
 
             });
     }
-   React.useEffect(()=>{
-    if(apiConf)
-    gettingFromDb()}, [apiConf]) 
+    React.useEffect(() => {
+        if (apiConf)
+            gettingFromDb()
+    }, [apiConf])
 
-      React.useEffect(()=>{
-        if(apiConf)
-        gettingFromDbAct()}, [apiConf]) 
+    React.useEffect(() => {
+        if (apiConf)
+            gettingFromDbAct()
+    }, [apiConf])
 
     console.log(value);
 
@@ -206,56 +208,52 @@ function Administrative() {
 
     }
 
-    function  delfaq(obj)
-    {
-        const {id}=obj.target
+    function delfaq(obj) {
+        const { id } = obj.target
         console.log(id);
-        axios.post('http://localhost:5000/del/faq',{key:id})
-        .then((result) => {
-            result=result.data
-            if(result.status)
-            gettingFromDb()
-            
-        }).catch((err) => {
-            
-        });
+        axios.post('http://localhost:5000/del/faq', { key: id })
+            .then((result) => {
+                result = result.data
+                if (result.status)
+                    gettingFromDb()
+
+            }).catch((err) => {
+
+            });
     }
 
-    function  delact(obj)
-    {
-        const {id}=obj.target
+    function delact(obj) {
+        const { id } = obj.target
         console.log(id);
-        axios.post('http://localhost:5000/del/act',{key:id})
-        .then((result) => {
-            result=result.data
-            if(result.status)
-            gettingFromDbAct()
-            
-        }).catch((err) => {
-            
-        });
+        axios.post('http://localhost:5000/del/act', { key: id })
+            .then((result) => {
+                result = result.data
+                if (result.status)
+                    gettingFromDbAct()
+
+            }).catch((err) => {
+
+            });
     }
 
-    function logout()
-    {
+    function logout() {
         axios.post('http://localhost:5000/logout')
-        .then((result) => {
-            result=result.data
-            if(result.status)
-            {
-                console.log('logged out succesfully');
-                navigate('/login')
-            }
-        }).catch((err) => {
-            
-        });
+            .then((result) => {
+                result = result.data
+                if (result.status) {
+                    console.log('logged out succesfully');
+                    navigate('/login')
+                }
+            }).catch((err) => {
+
+            });
     }
 
     return (
 
         apiConf ? <>
-            <Box display='flex' justifyContent='center'
-          color='whitesmoke'
+            <Box display='flex' justifyContent='space-between'
+                color='whitesmoke'
                 sx={{
                     backgroundColor: 'brown',
                     marginBottom: '30px'
@@ -267,44 +265,52 @@ function Administrative() {
                     }}
 
                 >ADMINISTRATIVE PANEL</Typography>
+                <Button sx={{color:'black',marginLeft:'60%',backgroundColor:'whitesmoke'}} variant='contained'
+                    onClick={()=>navigate('/')}
+                >Home</Button>
+                <Button sx={{color:'black',backgroundColor:'whitesmoke'}} variant='contained'
+                    onClick={logout}
+                >LOGOUT</Button>
+                
             </Box>
             <Box marginBottom={2}
-            sx={{color:'whitesmoke',backgroundColor:'black'}}
+                sx={{ color: 'whitesmoke', backgroundColor: 'black' }}
             >
                 <Accordion
-                sx={{
-                    backgroundColor:'black',
-                    color:'whitesmoke'
-                }}
+                    sx={{
+                        backgroundColor: '#757C95',
+                        color: 'whitesmoke'
+                    }}
                 >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                     >
                         <Icon  ><AddIcon /></Icon>    <Typography variant="body1" component='div'> ADD FAQ</Typography>
                     </AccordionSummary>
-                    <AccordionDetails>
+                    <AccordionDetails sx={{ backgroundColor: '#141B41' }}>
                         <Box display='flex' justifyContent='center' alignItems='center' >
                             <Stack spacing={2}>
                                 <Box>
                                     <Typography variant="body1"
                                         sx={{
-                                            fontFamily: 'Gemunu Libre, sans-serif'
+                                            fontFamily: 'Gemunu Libre, sans-serif',
+                                            fontSize: '200%'
                                         }} component='div'>PREV POSTED FAQ <IconButton onClick={faqRefresh}><RefreshIcon /></IconButton></Typography>
                                     <Stack>
                                         {
-                                           
+
                                             data2.map((item) => (
                                                 <>
-                                               
-                                                <Box key={item.key}  >
-                                                    <Typography color='green'
 
-                                                    >Q- {item.que.toUpperCase()}</Typography>
-                                                    <Typography>{item.ans}</Typography>
-                                                    <Divider color="red" />
-                                                    <Button id={item.key} onClick={delfaq}>DELETE</Button>
+                                                    <Box key={item.key}  >
+                                                        <Typography color='#98B9F2'
 
-                                                </Box></>
+                                                        >Q- {item.que.toUpperCase()}</Typography>
+                                                        <Typography>{item.ans}</Typography>
+                                                        <Divider color="red" />
+                                                        <Button id={item.key} onClick={delfaq}>DELETE</Button>
+
+                                                    </Box></>
                                             ))
                                         }
                                     </Stack>
@@ -312,7 +318,8 @@ function Administrative() {
                                 <Box>
                                     <Typography variant='h6'
                                         sx={{
-                                            fontFamily: 'Gemunu Libre, sans-serif'
+                                            fontFamily: 'Gemunu Libre, sans-serif',
+                                            fontSize: '200%'
                                         }}
 
                                         component='div' display='block'>Enter the Data here</Typography>
@@ -326,7 +333,11 @@ function Administrative() {
 
                                             style={{
                                                 width: '400px',
-                                                marginLeft: '12px'
+                                                marginLeft: '12px',
+                                                backgroundColor: 'rgba(0,0,0,0.1)',
+                                                color: ' #f2da11',
+                                                fontSize: '150%',
+
 
                                             }}
                                             value={qna.first}
@@ -340,7 +351,10 @@ function Administrative() {
                                             minRows={4}
                                             value={qna.second}
                                             style={{
-                                                width: '400px'
+                                                width: '400px',
+                                                backgroundColor: 'rgba(0,0,0,0.1)',
+                                                color: ' #f2da11',
+                                                fontSize: '150%',
                                             }}
                                             id='ans'
                                             onChange={updateqna}
@@ -363,30 +377,31 @@ function Administrative() {
 
             <Box>
                 <Accordion
-                 sx={{
-                    backgroundColor:'black',
-                    color:'whitesmoke'
-                }}
+                    sx={{
+                        backgroundColor: '#757C95',
+                        color: 'whitesmoke'
+                    }}
                 >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}>
                         <Icon  ><AddIcon /></Icon>    <Typography variant="body1" component='div'>  CLUB ACTIVITIES</Typography>
                     </AccordionSummary>
-                    <AccordionDetails>
+                    <AccordionDetails sx={{ backgroundColor: '#141B41' }}>
                         <Box display='flex' justifyContent='center'>
                             <Stack>
                                 <Box className="activity">
                                     <Typography variant='h6'
                                         sx={{
-                                            fontFamily: 'Gemunu Libre, sans-serif'
+                                            fontFamily: 'Gemunu Libre, sans-serif',
+                                            fontSize: '200%'
                                         }}
                                         component='div'>PREV CLUB ACTIVITIES</Typography>
                                 </Box>
                                 {data.map((item) =>
                                 (
                                     <>
-                                    <Typography variant="h6" color='green' component='div'>{item.act.toUpperCase()}</Typography>
-                                    <Button sx={{display:'inline'}} onClick={delact} id={item.key}>DELETE</Button></>
+                                        <Typography variant="h6" color='#98B9F2' component='div'>{item.act.toUpperCase()}</Typography>
+                                        <Button sx={{ display: 'inline' }} onClick={delact} id={item.key}>DELETE</Button></>
                                 )
 
                                 )}
@@ -411,7 +426,10 @@ function Administrative() {
                                     <FormControlLabel control={<TextareaAutosize
                                         style={{
                                             width: '400px',
-                                            marginBottom: '4px'
+                                            marginBottom: '4px',
+                                            backgroundColor: 'rgba(0,0,0,0.1)',
+                                                color: ' #f2da11',
+                                                fontSize: '150%',
                                         }}
                                         value={value}
                                         onChange={(obj) => setValue(obj.target.value)}
@@ -439,11 +457,9 @@ function Administrative() {
                 </Accordion>
 
             </Box>
-            <Button color='secondary' variant='contained'
-            onClick={logout}
-            >LOGOUT</Button>
+
         </> : null
-      
+
     )
 }
 

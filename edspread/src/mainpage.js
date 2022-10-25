@@ -7,6 +7,7 @@ import image from './workoutimg.jpg'
 import loop from './aset/loop.mp4'
 
 
+
 function MainPage() {
 
 
