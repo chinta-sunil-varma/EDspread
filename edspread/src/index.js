@@ -3,6 +3,7 @@ import  reactDOM  from 'react-dom/client'
 import App from './Administrative'
 import Main from './mainpage'
 import Faq from './faq'
+import AppC from './chat/App'
 import {BrowserRouter,Route,Routes} from 'react-router-dom'
 import { Login } from './Login'
 import { Register } from './Register'
@@ -20,6 +21,7 @@ root.render(
       <Route path='/admin' element={<App/>} />
       <Route path='/' element={<Main/>} />
       <Route path='/faq' element={<Faq/>} />
+      <Route path='/discus' element={<AppC/>} />
       <Route path='/login' element={<SignInSide/>} />
       <Route path='/register' element={<SignUp/>} />
       {/* <Route path='/log' element={<SignInSide/>} /> */}
