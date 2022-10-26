@@ -5,6 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import axios from 'axios';
 import image from './workoutimg.jpg'
 import loop from './aset/loop.mp4'
+import App from './App'
 
 
 
@@ -76,12 +77,13 @@ function MainPage() {
     style={{
       objectFit:'cover',
       position:'absolute',
-      width:'100%'
+      width:'100%',
+      height:'100vh'
     }}
      >
       <source src={loop}/>
     </video>
-      <Box sx={{position:'fixed',width:'100%'}}>
+      <Box sx={{position:'relative',width:'100%'}}>
         <Typography variant='h4' component='div'
           sx={{
             color:'whitesmoke',
@@ -118,6 +120,7 @@ function MainPage() {
               <Button onClick={logout} sx={{ color: 'white' }}>Log Out</Button>
             </Toolbar>
           </AppBar>
+          
           <Box display='flex' justifyContent='space-evenly'>
 
             {/* {
@@ -135,7 +138,8 @@ function MainPage() {
                   fontFamily: 'Gemunu Libre, sans-serif',
                   fontSize: 'larger',
                   textAlign: 'center',
-                  color:'whitesmoke'
+                  color:'whitesmoke',
+                  marginBottom:'25px'
                 }}
               >DASH-BOARD</Typography>
               <Grid container
@@ -168,10 +172,13 @@ function MainPage() {
 
 
             </Paper>
+            
           </Box>
         </Box>
+        
       </Box>
-    
+      <br></br>
+      <App></App>
     </>:null
   )
 
