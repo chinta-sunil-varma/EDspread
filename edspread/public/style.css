@@ -1,0 +1,77 @@
+.cd{
+    transition: 1s;
+}
+.cd:hover{
+    transform: scale(1.1);
+}
+.card-img-top{
+    align-self: center;
+    justify-content: center
+
+}
+
+.cbody{
+    position: absolute;
+    top:1000px;
+}
+.upcomming{
+    width: 100%;
+}
+a{
+    text-decoration: none;
+}
+marquee{
+    background-color: white;
+    box-shadow: gray 5px;
+    border-radius: 10px;
+    position: absolute;
+    left: 30px;
+
+}
+.upcomming{
+    width: 100%;
+    height: 30%;
+    background-color: #CFD2CF;
+    position: absolute;
+    top: 90%;
+
+}
+.update{
+    background: #CF0000;
+    background: linear-gradient(to right, #CF0000 43%, #3E00CF 99%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+p{
+    position:relative;
+    top: 25px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: bold;
+    font-size: large;
+}
+
+.register{
+    position:absolute;
+    top: 30%;
+}
+.rname{
+
+    font-size: 100px;
+    font-weight: bold;
+}
+.ldescription{
+
+    background-color:#D8D8D8;
+    border-radius: 10px;
+    width: 70%;
+    height: auto;
+    position: relative;
+    left: 15%;
+    padding: 10px;
+}
+
+.btn-success{
+    position:relative;
+    top: 20px;
+    left: 40%;
+}
