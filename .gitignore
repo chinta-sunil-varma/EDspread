@@ -1,2 +1,5 @@
-node_modules
-edspread/node_modules
+edspread/
+vite-frontend/node_modules
+node_modules/
+.env
+

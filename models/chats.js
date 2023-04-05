@@ -4,8 +4,8 @@ const Mongoose =require('mongoose').Mongoose
 const instance2 = new Mongoose()
 
 const schema =mongoose.Schema
-const url = 'mongodb+srv://sathwik13:edspread@cluster0.j2qeppm.mongodb.net/?retryWrites=true&w=majority'
-const connect = instance2.connect(url)
+// const url = 'mongodb+srv://sathwik13:edspread@cluster0.j2qeppm.mongodb.net/?retryWrites=true&w=majority'
+const connect = instance2.connect(process.env.MONGO_URL)
 
 const chatSchema = new schema({
     message:{
