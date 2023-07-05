@@ -26,6 +26,21 @@ The Club Management System is built using the following technologies:
 - Back-end: Node.js
 - Database: MongoDB
 
+To run the Club Management System application, follow the instructions below:
+
+**Front-end:**
+
+1. Navigate to the vite-frontend directory.
+2. Run `npm i` to install the required dependencies.
+3. Run `npm run dev` to start the development server.
+
+
+**Back-end:**
+
+1. Navigate to the back-end directory.
+2. Run `npm i` to install the required dependencies.
+3. Run `npm run start` to start the back-end server.
+
 ## Demo of the project
 
    https://github.com/chinta-sunil-varma/EDspread/assets/93024237/66035f1f-b42b-4bfb-9ef2-34e82a8ef2f8
